@@ -1,0 +1,7 @@
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'delivery-system'
+
+include 'eureka-server', 'order-service', 'payment-service', 'review-service'

@@ -1,0 +1,19 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: payment-service
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+  instance:
+    prefer-ip-address: true
+    # Two instances share the same application name, so the instance id must include the port.
+    instance-id: ${spring.application.name}:${server.port}
+
+payment:
+  # Probability (0.0 - 1.0) of a simulated failure.
+  failure-rate: 0.5

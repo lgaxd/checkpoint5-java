@@ -1,0 +1,55 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: jdbc:h2:mem:orders;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=60000
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  config:
+    # Loads the GEMINI_* values from the .env file at the repository root (bootRun runs inside order-service/).
+    import: optional:file:../.env[.properties],optional:file:./.env[.properties]
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+  cloud:
+    loadbalancer:
+      cache:
+        ttl: 5s
+  ai:
+    google:
+      genai:
+        # Never commit the key: it comes from the GEMINI_API_KEY variable (.env file or environment).
+        api-key: ${GEMINI_API_KEY:not-configured}
+        chat:
+          model: ${GEMINI_MODEL:gemini-flash-lite-latest}
+
+eureka:
+  client:
+    # Learn about newly registered instances (e.g. the payment service) quickly.
+    registry-fetch-interval-seconds: 5
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+payment:
+  retry:
+    max-retries: 5
+    delay: 200
+    multiplier: 2.0
+    jitter: 100
+    max-delay: 2000
+
+delivery:
+  rate-limit:
+    orders-per-second: 20
